@@ -1,0 +1,14 @@
+popular_threat_classification - (we better use last_analysis_stats and last_analysis_results) suggested_threat_label consists of the thread_category and threat_name, summarized data of the popular category and name, and holds a counter of the number of anti-viruses that classified the threat. (need to find the number of avs).
+size -
+times_submitted -
+totlat - mostly 0 in one file we checke, should be votes of users, not sure if credible
+reputation -
+sandbox_verdicts - list with sandbox_naem and malware_classification - helps for malware/not malware analysis.
+crowdsoruced_ids_resutls - contains a json of snort rules (network based rules) that jumps on the executable - intersting metdata - number of rules, rule_msg, rule_category, alert_context: list of (hostname, dest_port, url)
+unique_sources - mostly for publicity of the malware in the wild.
+pe_info - contains metadata of the pe headers, including rich headers and import tables. contains a lot of information that we may wat to use. compiler_product_versions, import_list.
+first_submission_date  -
+last_analysis_stats -
+last_analysis_results -
+crowedsourced_yara_results -
+meaningful_name - if is equal to known one it is interesting
