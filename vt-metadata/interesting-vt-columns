@@ -9,12 +9,12 @@ exiftool.LinkerVersion -
 total_votes - harmless and malicious
 ssdeep
 pe_info - contains metadata of the pe headers, including rich headers and import tables. contains a lot of information that we may wat to use. compiler_product_versions, import_list.
-pe_info.resource_langs
-pe_info.import_list - maybe make fuzzy hash ourselves
+pe_info.resource_langs - only the key
+#pe_info.import_list - maybe make fuzzy hash ourselves
 #pe_info.overlay.entropy ?
 pe_info.overlay.size
 pe_info.overlay.compiler_product_versions (check which features)
-pe_info.resource_types.(multiple types with default 0)
+pe_info.resource_types.(multiple types with default 0) - https://docs.microsoft.com/en-us/windows/win32/menurc/resource-types
 pe_info.section.virtual_size of first 4 sections
 
 
