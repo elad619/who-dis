@@ -13,10 +13,13 @@ from typing import List
 from tqdm import tqdm
 
 CAPABILITY_NAMESPACE = "CAPABILITY"
+MBC_NAMESPACE = "MBC Objective"
 MATCHES_PATTERN = "\((\d+) matches\)"
+MBC_TECHNIQUE_PATTERN = "\[(\w\d+)[\.]{0,1}([\d\w]{0,})\]"
+
 FILE_ID = "sha256"
 CAPAS_KEY_NAME = "capas"
-
+MBCS_OBJS_KEY_NAME = "mbc"
 OUT_FILE_SUFFIX = "json"
 
 
@@ -32,21 +35,16 @@ class CapaRule:
     def to_dict(self):
         return dataclasses.asdict(self)
 
-# class CapaRule:
-#     def __init__(self, rule, matches, namespace) -> None:
-#         self.rule = rule
-#         self.matches = matches
-#         self.namespace = namespace
+@dataclass
+class MBCRule:
+    objective:str
+    behavior:str
+    tehchnique_major:str
+    tehchnique_minor:str
     
-#     def to_dict(self) -> dict:
-#         """
-#         Converts the CapaRule into a dictionary
-#         """
-#         return {
-#             "rule" : self.rule,
-#             "matches" : self.matches,
-#             "namespace" : self.namespace
-#         }
+    def to_dict(self):
+        return dataclasses.asdict(self)
+    
 
 def get_rule_by_key(capa_rules: List[CapaRule], key: str):
     """
@@ -73,6 +71,31 @@ def get_capabilities(capa_list: List[CapaRule]):
             break
     return capa_list[index+1:]
 
+def slice_mbcs(capa_list: List[CapaRule]):
+    """
+    Get the capabilities from a list of an unparsed capa lines
+    :param capa_list: the list of capas
+    :return: parsed capabilities lists
+    """
+    mbcs = []
+    current_mbc_name = None
+    start_mbc=False
+    for i, capa_rule in enumerate(capa_list):
+        if capa_rule.rule == CAPABILITY_NAMESPACE:
+            start_mbc = False
+        if start_mbc:
+            if capa_rule.rule:
+                current_mbc_name = capa_rule.rule
+            techniques = re.findall(MBC_TECHNIQUE_PATTERN, capa_rule.namespace)
+            technique_major=techniques[0][0]
+            technique_minor=techniques[0][1]
+            mbcs.append(MBCRule(current_mbc_name, capa_rule.namespace, technique_major, technique_minor))
+        if capa_rule.rule == MBC_NAMESPACE:
+            start_mbc = True
+
+            
+    return mbcs
+
 def capa_to_json(input_file, output_file):
     with open(input_file, "r") as capa_file:
         capa_content = capa_file.readlines()
@@ -93,8 +116,10 @@ def capa_to_json(input_file, output_file):
 
     file_id = get_rule_by_key(lines_dict, FILE_ID)
     capas = get_capabilities(lines_dict)
+    mbcs = slice_mbcs(lines_dict)
 
-    capas_json = {FILE_ID: file_id, CAPAS_KEY_NAME: [capa_rule.to_dict() for capa_rule in capas]}
+    capas_json = {FILE_ID: file_id, CAPAS_KEY_NAME: [capa_rule.to_dict() for capa_rule in capas],
+                  MBCS_OBJS_KEY_NAME:[mbc.to_dict() for mbc in mbcs]}
 
     with open(f"{output_file}.{OUT_FILE_SUFFIX}", "w") as output_file:
         json.dump(capas_json, output_file, indent=4)
@@ -114,8 +139,6 @@ def main(input_file, output_file):
             capa_to_json(txt_file, current_output_file)
     else:
         capa_to_json(input_file, output_file)
-    
-   
 
 
 if __name__ == "__main__":
