@@ -5,13 +5,13 @@ exiftool.Timestamp - exits only on windows -  only hour
 exiftool.CodeSize -
 exiftool.LinkerVersion -
 #names - names of files
-capabilities_tags - (categorical check in vt capabilities_tags)
+# capabilities_tags - (categorical check in vt capabilities_tags) - need to find a list of all the capabilities to make it useful
 total_votes - harmless and malicious
 ssdeep
 pe_info - contains metadata of the pe headers, including rich headers and import tables. contains a lot of information that we may wat to use. compiler_product_versions, import_list.
 pe_info.resource_langs
 pe_info.import_list - maybe make fuzzy hash ourselves
-pe_info.overlay.entropy ?
+#pe_info.overlay.entropy ?
 pe_info.overlay.size
 pe_info.overlay.compiler_product_versions (check which features)
 pe_info.resource_types.(multiple types with default 0)
