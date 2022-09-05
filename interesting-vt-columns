@@ -1,0 +1,45 @@
+tlsh - (name of fuzzy hash) - hash which similiar to similar files
+vhash - fuzzy hash of vt (in house)
+
+exiftool.Timestamp - exits only on windows -  only hour
+exiftool.CodeSize -
+exiftool.LinkerVersion -
+#names - names of files
+capabilities_tags - (categorical check in vt capabilities_tags)
+total_votes - harmless and malicious
+ssdeep
+pe_info - contains metadata of the pe headers, including rich headers and import tables. contains a lot of information that we may wat to use. compiler_product_versions, import_list.
+pe_info.resource_langs
+pe_info.import_list - maybe make fuzzy hash ourselves
+pe_info.overlay.entropy ?
+pe_info.overlay.size
+pe_info.overlay.compiler_product_versions (check which features)
+pe_info.resource_types.(multiple types with default 0)
+pe_info.section.virtual_size of first 4 sections
+
+
+#popular_threat_classification - (we better use last_analysis_stats and last_analysis_results) suggested_threat_label consists of the thread_category and threat_name, summarized data of the popular category and name, and holds a counter of the number of anti-viruses that classified the threat. (need to find the number of avs).
+#popular_threat_category.value
+size -
+times_submitted - maybe like unique sources
+reputation -
+# sandbox_verdicts - list with sandbox_name and malware_classification - helps for malware/not malware analysis.
+#crowdsoruced_ids_resutls - contains a json of snort rules (network based rules) that jumps on the executable - intersting metdata - number of rules, rule_msg, rule_category, alert_context: list of (hostname, dest_port, url)
+unique_sources - mostly for publicity of the malware in the wild.
+first_submission_date  -
+last_analysis_stats.harmless
+last_analysis_stats.type-unsupported
+last_analysis_stats.suspicious
+last_analysis_stats.confirmed-timeout
+last_analysis_stats.timeout
+last_analysis_stats.failure
+last_analysis_stats.malicious
+last_analysis_stats.undetected
+#last_analysis_stats - like popular_threat_classification but better - av statuses/categories count
+#last_analysis_results - the av results themselves - like popular_threat_classification better, compare vectors of anti-viruses by category (malicious or not)
+#crowedsourced_yara_results - use the names to calculate the distance between strings
+#meaningful_name - if is equal to known one it is interesting
+
+
+To calculate:
+    tooltester - difference between exiftool.Timestamp and first_submission_date
