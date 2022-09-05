@@ -39,8 +39,11 @@ def get_embeddings_dataset(labels_dir: Path, embeddings_dir_path: Path):
         assert y_from_embedding_dir[malware_id] == family
         X_test.append(X_from_embedding_dir[malware_id])
 
+    return X_train, X_test, y_train, y_test
+
 
 if __name__ == '__main__':
     all_data_dir = Path(___)
     embeddings_dir = Path(all_data_dir, "embeddings")
     labels_dir = Path(all_data_dir, "train_test_split")
+    X_train, X_test, y_train, y_test = get_embeddings_dataset(labels_dir, embeddings_dir)
