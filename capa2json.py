@@ -136,7 +136,10 @@ def main(input_file, output_file):
             current_output_file = (Path(output_file)/txt_file.relative_to(p))
             current_output_file.parent.mkdir(parents=True, exist_ok=True)
             current_output_file = str(current_output_file).replace('.txt','.json')
-            capa_to_json(txt_file, current_output_file)
+            try:
+                capa_to_json(txt_file, current_output_file)
+            except Exception as e:
+                print(f'Unable to parse CAPA file {txt_file}')
     else:
         capa_to_json(input_file, output_file)
 
