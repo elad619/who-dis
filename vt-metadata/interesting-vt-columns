@@ -15,7 +15,7 @@ pe_info.resource_langs - only the key
 pe_info.overlay.size
 pe_info.overlay.compiler_product_versions (check which features)
 pe_info.resource_types.(multiple types with default 0) - https://docs.microsoft.com/en-us/windows/win32/menurc/resource-types
-pe_info.section.virtual_size of first 4 sections
+# pe_info.sections.virtual_size of first 4 sections
 
 
 #popular_threat_classification - (we better use last_analysis_stats and last_analysis_results) suggested_threat_label consists of the thread_category and threat_name, summarized data of the popular category and name, and holds a counter of the number of anti-viruses that classified the threat. (need to find the number of avs).
