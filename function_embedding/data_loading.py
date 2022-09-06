@@ -63,5 +63,3 @@ if __name__ == '__main__':
     embeddings_dir = Path(all_data_dir, "embeddings")
     labels_dir = Path(all_data_dir, "train_test_split")
     X_train, X_test, y_train, y_test = get_embeddings_dataset(labels_dir, embeddings_dir, clear_cache=True)
-import plotly.express as px
-px.histogram()
