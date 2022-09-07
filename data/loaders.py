@@ -35,12 +35,28 @@ def load_capas_from_jsons(json_dir:os.PathLike, label_extraction:str='dirname')-
     logger.info("Finished Loading jsons, ")
     return dict(dfs)
 
-
 def get_train_test_data(labels_dir: Path, ver:str = 'v1') -> Tuple[pd.Series, pd.Series]:
-    post_fix = '' if ver=='v1' else '_v2'
-    train_data = pd.read_csv(Path(labels_dir, f"train_samples{post_fix}.csv")).set_index("sample_name")
-    test_data = pd.read_csv(Path(labels_dir, f"test_samples{post_fix}.csv")).set_index("sample_name")
-    return train_data["family"], test_data["family"]
+    post_fix=''
+    if ver=='wipbot':
+        split_names = [f"wipbot_samples.csv"]
+    elif ver=='v3':
+        post_fix=f'_{ver}'
+        split_names = [f"train_samples{post_fix}.csv", f"test_samples{post_fix}.csv",f"hard_samples{post_fix}.csv"]
+    elif 'v' in ver:
+        post_fix=f'_{ver}'
+        split_names = [f"train_samples{post_fix}.csv", f"test_samples{post_fix}.csv"]
+    
+    split_data = []
+    for split_name in split_names:
+        split_data.append(pd.read_csv(Path(labels_dir, split_name)).set_index("sample_name")["family"])
+    return split_data
+
+def extract_capa_for_model(cats_df, column):
+    cats_df['dummy'] = 1
+    features_df = pd.pivot_table(cats_df, values='dummy', index=['uid'], columns=[column], aggfunc=np.sum, fill_value=0)
+    features_df = (features_df>=1).astype(int)
+    features_df['label'] = cats_df.groupby('uid').label.first()
+    return features_df
 
 
 if __name__=="__main__":
