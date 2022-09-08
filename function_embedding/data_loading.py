@@ -1,4 +1,4 @@
-from pathlib import Path
+
 from pathlib import Path
 from typing import Tuple, Dict, List
 
@@ -80,8 +80,21 @@ def get_embeddings_dataset(labels_dir: Path, embeddings_dir_path: Path,
 
 
 if __name__ == '__main__':
-    # load_all_embeddings_from_dir.clear_cache()
-    all_data_dir = Path(Path(r"C:\Users\yaara\OneDrive\Desktop\who_dis_data_test"))
-    embeddings_dir = Path(all_data_dir, "embeddings")
-    labels_dir = Path(all_data_dir, "train_test_split")
-    X_train, X_test, y_train, y_test = get_embeddings_dataset(labels_dir, embeddings_dir, clear_cache=True)
+    all_data_dir_path = Path(r"C:\Users\yaara\OneDrive\Desktop\who_dis_data")
+    embeddings_dir = Path(all_data_dir_path, "embeddings")
+    labels_dir = Path(all_data_dir_path, "train_test_split")
+
+    X_train, X_test, y_train, y_test = get_embeddings_dataset(labels_dir, embeddings_dir, dataset_version=3)
+
+    y_test = y_test[y_test.apply(lambda x: x in set(y_train))]
+    X_test = {k: v for k, v in X_test.items() if k in list(y_test.index)}
+
+    from nearest_neighbor import ClusteringTfidfKNNClassifier
+
+    model = ClusteringTfidfKNNClassifier()
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+
+    from sklearn.metrics import accuracy_score, confusion_matrix
+    print(accuracy_score(y_test, y_pred))
+    print(confusion_matrix(y_test, y_pred))
