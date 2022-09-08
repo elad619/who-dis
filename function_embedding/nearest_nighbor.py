@@ -9,7 +9,7 @@ from collections import Counter
 
 class GroupOfVectorsNearestNeighbors:
     # def __init__(self, victors_group_distance="naive"):
-    def __init__(self, distance_function):
+    def __init__(self, distance_function, k=5):
         # self.model = neighbors.KNeighborsClassifier(metric="precomputed")
         # self.model = neighbors.KNeighborsClassifier(n_neighbors=1, algorithm='brute', metric=distance_function)
         # self.model = neighbors.KNeighborsClassifier(n_neighbors=1, metric=distance_function)
@@ -20,7 +20,7 @@ class GroupOfVectorsNearestNeighbors:
         self.minimal_number_of_vectors = 100
         # self.victors_group_distance = victors_group_distance
         self.distance_function = distance_function
-        self.K = 5
+        self.K = k
 
     # @staticmethod
     # def distance_naive(group_of_vectors_1: List, group_of_vectors_2: List):
