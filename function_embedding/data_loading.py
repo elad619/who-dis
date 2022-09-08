@@ -60,16 +60,18 @@ def get_embeddings_dataset(labels_dir: Path, embeddings_dir_path: Path,
     for malware_id, family in y_train.items():
         try:
             family_from_embedding_dir = y_from_embedding_dir[f"function_embeddings-{malware_id}"]
-            assert y_from_embedding_dir[f"function_embeddings-{malware_id}"] == family, \
-                f"id: {malware_id} is bad, in gt: {family}, in embedding: {family_from_embedding_dir}"
+            if not y_from_embedding_dir[f"function_embeddings-{malware_id}"] == family:
+                print(f"id: {malware_id} is bad, in gt: {family}, in embedding: {family_from_embedding_dir}")
+                continue
             X_train[malware_id] = X_from_embedding_dir[f"function_embeddings-{malware_id}"]
         except KeyError:
             pass
     for malware_id, family in y_test.items():
         try:
             family_from_embedding_dir = y_from_embedding_dir[f"function_embeddings-{malware_id}"]
-            assert family_from_embedding_dir == family, \
-                f"id: {malware_id} is bad, in gt: {family}, in embedding: {family_from_embedding_dir}"
+            if not family_from_embedding_dir == family:
+                print(f"id: {malware_id} is bad, in gt: {family}, in embedding: {family_from_embedding_dir}")
+                continue
             X_test[malware_id] = X_from_embedding_dir[f"function_embeddings-{malware_id}"]
         except KeyError:
             pass
