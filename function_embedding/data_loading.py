@@ -1,11 +1,10 @@
-import os
+from pathlib import Path
 from pathlib import Path
 from typing import Tuple, Dict, List
 
 import pandas as pd
 import torch
-from cachier import cachier
-from tqdm.contrib.concurrent import process_map
+from tqdm.contrib.concurrent import thread_map
 
 
 def get_train_test_data(labels_dir: Path, version=None) -> Tuple[pd.Series, pd.Series]:
@@ -30,10 +29,10 @@ def load_all_embeddings_from_dir(embeddings_dir_path: Path, load_only_file_named
                 all_malware_paths.append(malware_file)
                 y[malware_file_id] = class_path.name
 
-    all_ids_and_vecs = process_map(_load_all_vectors_from_dir, all_malware_paths,
-                                   desc="loading vecs from files",
-                                   max_workers=os.cpu_count() - 4,
-                                   unit="malware")
+    all_ids_and_vecs = thread_map(_load_all_vectors_from_dir, all_malware_paths,
+                                  desc="loading vecs from files",
+                                  max_workers=20,
+                                  unit="malware")
     X = {malware_id: vecs_list for malware_id, vecs_list in all_ids_and_vecs}
     return X, y
 
