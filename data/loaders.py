@@ -1,11 +1,12 @@
 from collections import defaultdict
 import os
-from typing import Dict, Tuple
+from typing import Dict, Sequence, Tuple
 import pandas as pd
 from pathlib import Path
 from tqdm import tqdm
 import logging
 import json
+import numpy as np
 
 logger = logging.getLogger()
 
@@ -51,12 +52,30 @@ def get_train_test_data(labels_dir: Path, ver:str = 'v1') -> Tuple[pd.Series, pd
         split_data.append(pd.read_csv(Path(labels_dir, split_name)).set_index("sample_name")["family"])
     return split_data
 
-def extract_capa_for_model(cats_df, column):
+def extract_capa_for_model(cats_df:pd.DataFrame, column:str)->pd.DataFrame:
     cats_df['dummy'] = 1
     features_df = pd.pivot_table(cats_df, values='dummy', index=['uid'], columns=[column], aggfunc=np.sum, fill_value=0)
     features_df = (features_df>=1).astype(int)
-    features_df['label'] = cats_df.groupby('uid').label.first()
+    features_df['label'] = cats_df.groupby('uid')['label'].first()
     return features_df
+
+def load_split(train_test_split_dir:os.PathLike, features_df:pd.DataFrame, split_ver:str)->Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    if split_ver=='v3':
+        train_split, test_split, hard_test_split = get_train_test_data(train_test_split_dir, ver=split_ver)
+        train_index  = np.intersect1d(train_split.index, features_df.index)
+        test_index  = np.intersect1d(test_split.index, features_df.index)
+        hard_test_index  = np.intersect1d(hard_test_split.index, features_df.index)
+        features_train = features_df.loc[train_index]
+        features_test = features_df.loc[test_index]
+        hard_features_test = features_df.loc[hard_test_index]
+    else:
+        train_split, test_split = get_train_test_data(train_test_split_dir, ver=split_ver)
+        train_index  = np.intersect1d(train_split.index, features_df.index)
+        test_index  = np.intersect1d(test_split.index, features_df.index)
+        features_train = features_df.loc[train_index]
+        features_test = features_df.loc[test_index]
+        hard_features_test = pd.DataFrame(columns=features_df.columns)
+    return features_train, features_test, hard_features_test
 
 
 if __name__=="__main__":
