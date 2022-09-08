@@ -5,7 +5,6 @@ from typing import Tuple, Dict, List
 import pandas as pd
 import torch
 from cachier import cachier
-from tqdm import tqdm
 from tqdm.contrib.concurrent import process_map
 
 
@@ -23,7 +22,7 @@ def load_all_embeddings_from_dir(embeddings_dir_path: Path, load_only_file_named
     y = dict()
 
     all_malware_paths = []
-    for class_path in tqdm(embeddings_dir_path.glob("*")):
+    for class_path in embeddings_dir_path.glob("*"):
         for malware_file in class_path.glob("*"):
             malware_file_id = malware_file.name
             if load_only_file_named is None or \
