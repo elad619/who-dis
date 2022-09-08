@@ -17,20 +17,23 @@ def get_train_test_data(labels_dir: Path, version=None) -> Tuple[pd.Series, pd.S
     return train_data["family"], test_data["family"]
 
 
-@cachier()
-def load_all_embeddings_from_dir(embeddings_dir_path: Path) -> Tuple[Dict[str, List], Dict[str, str]]:
+# @cachier()
+def load_all_embeddings_from_dir(embeddings_dir_path: Path, load_only_file_named=None) -> Tuple[
+    Dict[str, List], Dict[str, str]]:
     y = dict()
 
     all_malware_paths = []
     for class_path in tqdm(embeddings_dir_path.glob("*")):
         for malware_file in class_path.glob("*"):
-            all_malware_paths.append(malware_file)
             malware_file_id = malware_file.name
-            y[malware_file_id] = class_path.name
+            if load_only_file_named is None or \
+                    malware_file_id.replace("function_embeddings-", "") in load_only_file_named:
+                all_malware_paths.append(malware_file)
+                y[malware_file_id] = class_path.name
 
     all_ids_and_vecs = process_map(_load_all_vectors_from_dir, all_malware_paths,
                                    desc="loading vecs from files",
-                                   max_workers=os.cpu_count() - 2,
+                                   max_workers=os.cpu_count() - 4,
                                    unit="malware")
     X = {malware_id: vecs_list for malware_id, vecs_list in all_ids_and_vecs}
     return X, y
@@ -46,12 +49,14 @@ def _load_all_vectors_from_dir(malware_file: Path) -> Tuple[str, List]:
     return malware_id, all_vecs
 
 
-def get_embeddings_dataset(labels_dir: Path, embeddings_dir_path: Path, clear_cache: bool = False,
+def get_embeddings_dataset(labels_dir: Path, embeddings_dir_path: Path,
+                           # clear_cache: bool = False,
                            dataset_version=None):
-    if clear_cache:
-        load_all_embeddings_from_dir.clear_cache()
-    X_from_embedding_dir, y_from_embedding_dir = load_all_embeddings_from_dir(embeddings_dir_path)
+    # if clear_cache:
+    #     load_all_embeddings_from_dir.clear_cache()
     y_train, y_test = get_train_test_data(labels_dir, dataset_version)
+    all_malware_ids = list(y_train.index) + list(y_test.index)
+    X_from_embedding_dir, y_from_embedding_dir = load_all_embeddings_from_dir(embeddings_dir_path, all_malware_ids)
     X_train, X_test = {}, {}
 
     for malware_id, family in y_train.items():
